@@ -9,36 +9,43 @@ var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
+var watchify = require('watchify');
 
 gulp.task('sass', function() {
   return gulp.src('scss/style.scss')
     .pipe(sourcemaps.init())
     .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-    .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist'))
     .pipe(browserSync.stream());
 });
 
-gulp.task('js', function() {
-  var b = browserify({
-    entries: 'js/index.js',
-    debug: true
-  });
+var args = Object.assign({
+  entries: 'js/index.js',
+  debug: true
+}, watchify.args);
 
-  return b.transform(babelify, {presets: ['es2015']})
-    .bundle()
+var b = watchify(browserify(args));
+
+b.transform(babelify, {presets: ['es2015']});
+
+gulp.task('js', bundle);
+
+function bundle() {
+  return b.bundle()
     .on('error', function(error) {
       console.error(error.toString());
+      browserSync.notify('Browserify Error');
       this.emit('end');
     })
     .pipe(source('bundle.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(uglify())
-    .pipe(sourcemaps.write())
+    // .pipe(uglify())
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist'))
     .pipe(browserSync.stream({once: true}));
-});
+}
 
 gulp.task('default', ['sass', 'js'], function() {
   browserSync.init({
