@@ -1,12 +1,11 @@
-const createControls = require('orbit-controls');
-const assign = require('object-assign');
+import * as THREE from 'three';
+import createControls from 'orbit-controls';
 
-// module.exports = createApp;
 export default function createApp (opt = {}) {
 
   const dpr = window.devicePixelRatio;
 
-  const renderer = new THREE.WebGLRenderer(assign({
+  const renderer = new THREE.WebGLRenderer(Object.assign({
     antialias: true
   }, opt));
   renderer.setPixelRatio(dpr);
@@ -18,7 +17,7 @@ export default function createApp (opt = {}) {
   const camera = new THREE.PerspectiveCamera(60, 1, 0.01, 800);
   const target = new THREE.Vector3();
   const scene = new THREE.Scene();
-  const controls = createControls(assign({
+  const controls = createControls(Object.assign({
     canvas,
     distance:400
   }, opt));

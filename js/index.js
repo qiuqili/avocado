@@ -1,5 +1,5 @@
-global.THREE = require('three');
-const createLoop = require('raf-loop');
+import * as THREE from 'three';
+import createLoop from 'raf-loop';
 import createApp from  './app';
 import createLights from './lighting';
 import createPlane from './plane';
@@ -34,7 +34,6 @@ renderer.gammaInput = true;
 renderer.gammaOutput = true;
 
 createLoop((dt) => {
- updateControls();
+  updateControls();
   renderer.render(scene, camera);
 }).start();
-

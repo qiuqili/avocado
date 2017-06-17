@@ -1,4 +1,6 @@
-export default function () {
+import * as THREE from 'three';
+
+export default function createPlane () {
   const plane= new THREE.PlaneGeometry(500,500, 100,100);
   const planeMaterial = new THREE.ShadowMaterial();
   planeMaterial.opacity = 0.5;

@@ -1,4 +1,6 @@
-export default function () {
+import * as THREE from 'three';
+
+export default function createLights () {
   const container = new THREE.Object3D();
 
   const back = new THREE.SpotLight( 0xffffff ,1.5 );
