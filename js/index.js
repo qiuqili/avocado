@@ -15,7 +15,6 @@ const{
 
 var world, mass, body, shape, timeStep=1/60,avo;
 
-initCannon();
 function initCannon() {
     world = new CANNON.World();
     world.gravity.set(0,0,0);
@@ -35,13 +34,15 @@ function initCannon() {
 
 //load model
   const loader = new THREE.JSONLoader();
-  loader.load('assets/avo.json',function(geometry, materials) {
+  loader.load('assets/avo.json',loadmodel);
+  function loadmodel(geometry, materials) {
+  console.log("load")
   avo = new THREE.Mesh(geometry,new THREE.MultiMaterial(materials));
   avo.scale.multiplyScalar(8);
   avo.castShadow = true;
   scene.add(avo);
   avo.position.set(0,-50,0);
-});
+}
 
 const floor = createPlane();
 floor.receiveShadow = true;
@@ -55,6 +56,39 @@ renderer.gammaInput = true;
 renderer.gammaOutput = true;
 
 
+ window.addEventListener("mousedown", onMouseDown, false );
+ window.addEventListener("mouseup", onMouseUp, false );
+ window.addEventListener("mousemove", onMouseMove, false );
+
+ function onMouseDown(e){
+   console.log("down")
+    initCannon();
+    createLoop((dt) => {
+    updatePhysics();
+  }).start();
+ }
+
+function onMouseUp(e) {
+   console.log("up")
+}
+function onMouseMove(e){
+   setMarker(e.clientX,e.clientY,0);
+  console.log(e.screenX);
+  console.log(e.clientX);
+}
+
+var marker= false;
+function setMarker(x,y,z) {
+   if(!marker){
+      var shape = new THREE.SphereGeometry(10, 8, 8);
+      marker = new THREE.Mesh(shape, new THREE.MeshLambertMaterial( { color: 0xff0000 } ));
+      scene.add(marker);
+   }
+      marker.visible = true;
+      marker.position.set(x,y,z);
+ }
+
+
  function updatePhysics() {
     // Step the physics world
     world.step(timeStep);
@@ -65,6 +99,5 @@ renderer.gammaOutput = true;
 
 createLoop((dt) => {
   updateControls();
-  updatePhysics();
   renderer.render(scene, camera);
 }).start();
